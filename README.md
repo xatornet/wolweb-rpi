@@ -122,7 +122,7 @@ If everything went alright, you should now be able to execute wolweb like this:
 chmod +x wolweb
 ```
 
-## Executing Wolweb
+## Executing Wolweb manually
 
 Execute directly with: 
 ```
@@ -133,6 +133,38 @@ Or add it as service, to your liking.
 
 + You should be able to access it with http://YOUR-RPI-IP:8089/wolweb/ 
 
+## Executing Wolweb as a service
+
+This tutorial assumes that your RPI uses "pi" as user, and that wolweb-rpi folder is inside home.
+
++ **Create service file:** 
+```
+sudo nano /lib/systemd/system/wolweb.service
+```
+
++ **Paste service config:**
+```
+[Unit]
+Description=WolWeb-Server
+After=network.target
+
+[Service]
+ExecStart=/home/pi/wolweb-rpi/wolweb
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Press CTRL+X to save the file.
+
++ **Enable Wolweb service:** 
+```
+sudo systemctl enable wolweb.service
+```
+
+Now, restart your Raspberry Pi and Wolweb should be working when it boots at http://YOUR-RPI-IP:8089/wolweb/ 
 
 ## NGiNX Config
 
