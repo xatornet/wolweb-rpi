@@ -89,45 +89,51 @@ You can override the default application configuration by using a config file or
 }
 
 ```
-## Usage with Docker
+## Building for Raspberry Pi 3+
 
-This project includes [Dockerfile (based on Alpine)](./Dockerfile) and [docker-compose.yml](./docker-compose.yml) files which you can use to build the image for your platform and run it using the docker compose file. If interested, I also have alternate [Dockerfile (based on Debian)](.Debian_Dockerfile). Both of these Dockerfile are tested to run on Raspberry Pi Docker CE. If you want to use this application as-is, you will only need to download these two docker-related files to get started. The docker file will grab the code and compile it for your platform.
-
-> I could not get this to run using Docker's bridged network. The only way I was able to make it work was to use host network for the docker container. See this [https://github.com/docker/for-linux/issues/637](https://github.com/docker/for-linux/issues/637) for details.
-
-### With docker-compose
-```bash
-docker-compose up -d
++ **Install Go:**
+```
+sudo apt-get install golang
 ```
 
-### Build and run manually
-```bash
-docker build -t wolweb .
-docker run --network host -it wolweb
++ **Clone this github:**
+```
+git clone https://github.com/xatornet/wolweb-rpi
+cd wolweb-rpi
 ```
 
-### Extract the compiled application from an image
-```bash
-docker cp wolweb:/wolweb - > wolweb.gz
++ **Config go to add required packages:**
+```
+go mod init wolweb
+go get -d github.com/gorilla/handlers
+go get -d github.com/gorilla/mux
+go get -d github.com/ilyakaznacheev/cleanenv
 ```
 
-## Build on Windows
-I use VS Code with Go extension. To build this project on Windows:
-```powershell
-go build -o wolweb.exe .
++ **Start compilation:**
+```
+GOOS="linux" GOARCH="arm64" go build -o wolweb .
 ```
 
-## Build for ASUS Routers (ARM v5)
-I initially thought of running this application on my router, so I needed to build the application without having to install build tool on my router. I use the following **PowerShell** one liner to build targeting the ARM v5 platform on my Windows machine with VS Code:
-```powershell
- $Env:GOOS = "linux"; $Env:GOARCH = "arm"; $Env:GOARM = "5"; go build -o wolweb .
++ **Give permission:**
+
+If everything went alright, you should now be able to execute wolweb like this:
 ```
-Copy the file over to router and make it executable.
-```sh
-chmod +x wolweb
+chmod + X wolweb
 ```
 
-To see detailed instructions on how to run this application as service on ASUS router with custom firmware [asuswrt-merlin](https://www.asuswrt-merlin.net/) see this [Wiki guide](https://github.com/sameerdhoot/wolweb/wiki/Run-on-asuswrt-merlin)
+## Executing Wolweb
+
+Execute directly with: 
+```
+./wolweb
+```
+
+Or add it as service, to your liking. 
+
++ You should be able to access it with http://YOUR-RPI-IP:8089/wolweb/ 
+
+
 ## NGiNX Config
 
 I am already using NGiNX as web-proxy for accessing multiple services (web interfaces) from single IP and port 443 using free Let's Encrypt HTTPS certificate. For accessing this service, I just added the following configuration under my existing server node.
