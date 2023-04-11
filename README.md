@@ -119,7 +119,7 @@ GOOS="linux" GOARCH="arm64" go build -o wolweb .
 
 If everything went alright, you should now be able to execute wolweb like this:
 ```
-chmod + X wolweb
+chmod +x wolweb
 ```
 
 ## Executing Wolweb
